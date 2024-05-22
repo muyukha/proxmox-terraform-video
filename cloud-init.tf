@@ -4,7 +4,7 @@ data "template_file" "cloud_init" {
   vars = {
     hostname = local.vm_hostname
     passwd   = local.vm_hashed_password
-    ssh_key  = local.public_ssh_key
+    # sh_key  = local.public_ssh_key
     ssh_user = local.vm_user
   }
 }
@@ -14,12 +14,15 @@ resource "local_file" "cloud_init" {
   filename = "${path.module}/files/user_data_cloud_init.cfg"
 }
 
-data "template_file" "private_ssh_key" {
+// We are not going to add ssh keys to the vm for now
+
+/* data "template_file" "private_ssh_key" {
   template = file("${path.module}/files/id_rsa")
   vars = {
     priv_ssh_key = local.priv_ssh_key
   }
 }
+
 resource "local_file" "private_ssh_key" {
   content  = data.template_file.private_ssh_key.rendered
   filename = "${path.module}/files/id_rsa.priv_key"
@@ -35,6 +38,8 @@ resource "local_file" "public_ssh_key" {
   content  = data.template_file.public_ssh_key.rendered
   filename = "${path.module}/files/id_rsa.pub_key"
 }
+ */
+
 resource "null_resource" "cloud_init" {
   triggers = {
     key = uuid()
@@ -92,7 +97,9 @@ resource "null_resource" "cloud-init-git-config" {
     host     = local.vm_ip_address
   }
 
-  provisioner "file" {
+  // We are not going to add ssh keys to the vm for now
+
+ /*  provisioner "file" {
     source      = "files/id_rsa.priv_key"
     destination = "/tmp/id_rsa.priv_key"
   }
@@ -100,7 +107,8 @@ resource "null_resource" "cloud-init-git-config" {
     source      = "files/id_rsa.pub_key"
     destination = "/tmp/id_rsa.pub_key"
   }
-
+ */
+ 
   provisioner "remote-exec" {
     inline = [
       "sudo mkdir -p ~/.ssh",
